@@ -1,0 +1,38 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "aadbg_dll", "aadbg_dll\aadbg_dll.vcxproj", "{65762A1D-2453-40BB-B35E-5A8AE63F6533}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "aadbg_test", "aadbg_test\aadbg_test.vcxproj", "{252D2CD0-4CFB-4DAF-A74A-F9FA2AC44806}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "aadbg2_dll", "aadgb2_dll\aadgb2_dll.vcxproj", "{A5E94BC9-D334-4E46-B237-2D1FC55E9DB0}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "aadbg_test2", "aadbg_test2\aadbg_test2.vcxproj", "{38B4AB31-402A-490F-BFF2-8990A3BBE653}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{65762A1D-2453-40BB-B35E-5A8AE63F6533}.Debug|Win32.ActiveCfg = Debug|Win32
+		{65762A1D-2453-40BB-B35E-5A8AE63F6533}.Debug|Win32.Build.0 = Debug|Win32
+		{65762A1D-2453-40BB-B35E-5A8AE63F6533}.Release|Win32.ActiveCfg = Release|Win32
+		{65762A1D-2453-40BB-B35E-5A8AE63F6533}.Release|Win32.Build.0 = Release|Win32
+		{252D2CD0-4CFB-4DAF-A74A-F9FA2AC44806}.Debug|Win32.ActiveCfg = Debug|Win32
+		{252D2CD0-4CFB-4DAF-A74A-F9FA2AC44806}.Debug|Win32.Build.0 = Debug|Win32
+		{252D2CD0-4CFB-4DAF-A74A-F9FA2AC44806}.Release|Win32.ActiveCfg = Release|Win32
+		{252D2CD0-4CFB-4DAF-A74A-F9FA2AC44806}.Release|Win32.Build.0 = Release|Win32
+		{A5E94BC9-D334-4E46-B237-2D1FC55E9DB0}.Debug|Win32.ActiveCfg = Debug|Win32
+		{A5E94BC9-D334-4E46-B237-2D1FC55E9DB0}.Debug|Win32.Build.0 = Debug|Win32
+		{A5E94BC9-D334-4E46-B237-2D1FC55E9DB0}.Release|Win32.ActiveCfg = Release|Win32
+		{A5E94BC9-D334-4E46-B237-2D1FC55E9DB0}.Release|Win32.Build.0 = Release|Win32
+		{38B4AB31-402A-490F-BFF2-8990A3BBE653}.Debug|Win32.ActiveCfg = Debug|Win32
+		{38B4AB31-402A-490F-BFF2-8990A3BBE653}.Debug|Win32.Build.0 = Debug|Win32
+		{38B4AB31-402A-490F-BFF2-8990A3BBE653}.Release|Win32.ActiveCfg = Release|Win32
+		{38B4AB31-402A-490F-BFF2-8990A3BBE653}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
