@@ -4,6 +4,7 @@
 #include <Windows.h>
 #include <cstring>
 #include <cstdio>
+#include <cstdlib>
 #include "plugin.h"
 #include "Ioctl.h"
 #include "func.h"
@@ -99,21 +100,128 @@ extc void _export cdecl ODBG_Pluginmainloop(DEBUG_EVENT* debug_event)
 	if( CREATE_PROCESS_DEBUG_EVENT == debug_event->dwDebugEventCode )
 	{
 		HANDLE hProcess = debug_event->u.CreateProcessInfo.hProcess;
-		if (!HookProcess(dwPID, TRUE, hProcess))
-		{
-			MessageBox(g_hWndMain, "hook failed", g_szPluginName, MB_OK);
-		}
-	}
-	else if (CREATE_THREAD_DEBUG_EVENT == debug_event->dwDebugEventCode)
-	{
-		//HANDLE hThread = debug_event->u.CreateThread.hThread;
-		//DWORD dwPID = GetProcessIdOfThread(hThread);
-		//if (!HookProcess(dwPID, TRUE, NULL))
+
+		// 使用hook的方法
+		//if (!HookProcess(dwPID, TRUE, hProcess))
 		//{
 		//	MessageBox(g_hWndMain, "hook failed", g_szPluginName, MB_OK);
 		//}
-		
-	}
+#if 1
+		// 直接修改目标进程PEB的方法
+		HMODULE NtdllModule = GetModuleHandle(_T("ntdll.dll"));
+		PFN_NTQIP NtQueryInformationProcess = (PFN_NTQIP)GetProcAddress(NtdllModule,
+			"NtQueryInformationProcess");
+		PROCESS_BASIC_INFORMATION32 pbi = { 0 };
+		UINT32  ReturnLength = 0;
+		NTSTATUS Status = NtQueryInformationProcess(hProcess,
+			ProcessBasicInformation, &pbi, (UINT32)sizeof(pbi), (UINT32*)&ReturnLength);
+
+		if (NT_SUCCESS(Status))
+		{
+
+			//_PEB32* pPEB = (_PEB32*)malloc(sizeof(_PEB32));
+			//Status = ReadProcessMemory(hProcess, (PVOID)pbi.PebBaseAddress, (_PEB32*)pPEB, sizeof(_PEB32), NULL);
+			//_RTL_USER_PROCESS_PARAMETERS32 Parameters32;
+			//Status = ReadProcessMemory(hProcess, (PVOID)pPEB->ProcessParameters, &Parameters32, sizeof(_RTL_USER_PROCESS_PARAMETERS32), NULL);
+			//BYTE* Environment = new BYTE[Parameters32.EnvironmentSize * 2];
+			//Status = ReadProcessMemory(hProcess, (PVOID)Parameters32.Environment, Environment, Parameters32.EnvironmentSize, NULL);
+
+			DWORD old_protect;
+			if (!VirtualProtectEx(hProcess, (LPVOID)pbi.PebBaseAddress, 4096, PAGE_READWRITE, &old_protect))
+			{
+				MessageBox(g_hWndMain, "virtualprotectex change failed", g_szPluginName, MB_OK);
+			}
+
+			byte pPEB[512] = { 0 };
+			DWORD NumOfBytes;
+			if (!ReadProcessMemory(hProcess, (PVOID)pbi.PebBaseAddress, pPEB, 512, &NumOfBytes))
+			{
+				MessageBox(g_hWndMain, "read peb failed", g_szPluginName, MB_OK);
+			}
+
+			// 修改DebugFlag
+			pPEB[2] = 0;
+			// 修改NtGlobalFlag
+			DWORD dwNtGlobalFlag = *(LPDWORD)(pPEB + 0x68);
+			dwNtGlobalFlag &= ~0x70;
+			*(LPDWORD)(pPEB + 0x68) = dwNtGlobalFlag;
+
+			if (!WriteProcessMemory(hProcess, (PVOID)pbi.PebBaseAddress, pPEB, 512, &NumOfBytes))
+			{
+				MessageBox(g_hWndMain, "write peb failed", g_szPluginName, MB_OK);
+			}
+
+			if (!VirtualProtectEx(hProcess, (LPVOID)pbi.PebBaseAddress, 4096, old_protect, &old_protect))
+			{
+				MessageBox(g_hWndMain, "virtualprotectex restore failed", g_szPluginName, MB_OK);
+			}
+		} // if ntqip success
+#endif
+
+	} // if event create process
+	// 根本没有这个事件。。。
+	else if (CREATE_THREAD_DEBUG_EVENT == debug_event->dwDebugEventCode)
+	{
+#if 0
+		MessageBox(g_hWndMain, "CREATE_THREAD_DEBUG_EVENT", g_szPluginName, MB_OK);
+
+		DWORD process_id = GetProcessIdOfThread(debug_event->u.CreateThread.hThread);
+		HANDLE hProcess = OpenProcess(PROCESS_ALL_ACCESS, FALSE, process_id);
+
+
+		// 直接修改目标进程PEB的方法
+		HMODULE NtdllModule = GetModuleHandle(_T("ntdll.dll"));
+		PFN_NTQIP NtQueryInformationProcess = (PFN_NTQIP)GetProcAddress(NtdllModule,
+			"NtQueryInformationProcess");
+		PROCESS_BASIC_INFORMATION32 pbi = { 0 };
+		UINT32  ReturnLength = 0;
+		NTSTATUS Status = NtQueryInformationProcess(hProcess,
+			ProcessBasicInformation, &pbi, (UINT32)sizeof(pbi), (UINT32*)&ReturnLength);
+
+		if (NT_SUCCESS(Status))
+		{
+
+			MessageBox(g_hWndMain, "qip success", g_szPluginName, MB_OK);
+
+			//_PEB32* pPEB = (_PEB32*)malloc(sizeof(_PEB32));
+			//Status = ReadProcessMemory(hProcess, (PVOID)pbi.PebBaseAddress, (_PEB32*)pPEB, sizeof(_PEB32), NULL);
+			//_RTL_USER_PROCESS_PARAMETERS32 Parameters32;
+			//Status = ReadProcessMemory(hProcess, (PVOID)pPEB->ProcessParameters, &Parameters32, sizeof(_RTL_USER_PROCESS_PARAMETERS32), NULL);
+			//BYTE* Environment = new BYTE[Parameters32.EnvironmentSize * 2];
+			//Status = ReadProcessMemory(hProcess, (PVOID)Parameters32.Environment, Environment, Parameters32.EnvironmentSize, NULL);
+
+			DWORD old_protect;
+			if (!VirtualProtectEx(hProcess, (LPVOID)pbi.PebBaseAddress, 4096, PAGE_READWRITE, &old_protect))
+			{
+				MessageBox(g_hWndMain, "virtualprotectex change failed", g_szPluginName, MB_OK);
+			}
+
+			byte pPEB[512] = { 0 };
+			DWORD NumOfBytes;
+			if (!ReadProcessMemory(hProcess, (PVOID)pbi.PebBaseAddress, pPEB, 512, &NumOfBytes))
+			{
+				MessageBox(g_hWndMain, "read peb failed", g_szPluginName, MB_OK);
+			}
+
+			// 修改DebugFlag
+			pPEB[2] = 0;
+			// 修改NtGlobalFlag
+			DWORD dwNtGlobalFlag = *(LPDWORD)(pPEB + 0x68);
+			dwNtGlobalFlag &= ~0x70;
+			*(LPDWORD)(pPEB + 0x68) = dwNtGlobalFlag;
+
+			if (!WriteProcessMemory(hProcess, (PVOID)pbi.PebBaseAddress, pPEB, 512, &NumOfBytes))
+			{
+				MessageBox(g_hWndMain, "write peb failed", g_szPluginName, MB_OK);
+			}
+
+			if (!VirtualProtectEx(hProcess, (LPVOID)pbi.PebBaseAddress, 4096, old_protect, &old_protect))
+			{
+				MessageBox(g_hWndMain, "virtualprotectex restore failed", g_szPluginName, MB_OK);
+			}
+		} // if ntqip success
+#endif
+	} // else if create thread event
 }
 
 

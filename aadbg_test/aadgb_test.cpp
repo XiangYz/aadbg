@@ -17,7 +17,7 @@ int _tmain(int argc, TCHAR* argv[])
 		std::cout << "dbg test passed!" << std::endl;
 	}
 
-	TCHAR                   szPath[MAX_PATH] = {_T("C:\\Users\\Public\\share\\aadbg_dll\\Release\\aadbg_test2.exe")};
+	TCHAR                   szPath[MAX_PATH] = {_T("D:\\xiang\\github_space\\aadbg\\Release\\aadbg_test2.exe")};
 	STARTUPINFO				si = {sizeof(STARTUPINFO),};
 	PROCESS_INFORMATION		pi = {0,};
 	CONTEXT                 ctx = {0,};
