@@ -59,7 +59,7 @@ BOOL CheckDllInProcess(DWORD dwPID, LPCTSTR szDllPath);
 BOOL IsVistaLater();
 HANDLE MyCreateRemoteThread(HANDLE hProcess, LPTHREAD_START_ROUTINE pThreadProc, LPVOID pRemoteBuf);
 
-
+DWORD GetThreadIDFromPID(DWORD dwPID);
 
 
 

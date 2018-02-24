@@ -83,6 +83,7 @@
   <ItemGroup>
     <ClCompile Include="aadbg_dll.cpp" />
     <ClCompile Include="func.cpp" />
+    <ClCompile Include="kill_isdbg.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="func.h" />

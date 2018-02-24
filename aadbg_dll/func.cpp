@@ -422,3 +422,25 @@ BOOL CheckDllInProcess(DWORD dwPID, LPCTSTR szDllPath)
 	CloseHandle(hSnapshot);
 	return FALSE;
 }
+
+DWORD GetThreadIDFromPID(DWORD dwPID)
+{
+	DWORD idThread = 0;
+	THREADENTRY32 te;       // 线程信息
+	te.dwSize = sizeof(THREADENTRY32);
+	HANDLE hSnapshot = CreateToolhelp32Snapshot(TH32CS_SNAPTHREAD, 0); // 系统所有线程快照
+	if (Thread32First(hSnapshot, &te))       // 第一个线程
+	{
+		do
+		{
+			if (dwPID == te.th32OwnerProcessID)      // 认为找到的第一个该进程的线程为主线程
+			{
+				idThread = te.th32ThreadID;
+				break;
+			}
+		} while (Thread32Next(hSnapshot, &te));           // 下一个线程
+	}
+	CloseHandle(hSnapshot); // 删除快照
+
+	return idThread;
+}

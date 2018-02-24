@@ -581,6 +581,7 @@ typedef struct t_table {               // Window with sorted data and bar
 #define Deletenonconfirmedsorteddata _Deletenonconfirmedsorteddata
 #define Findsorteddata _Findsorteddata
 #define Findsorteddatarange _Findsorteddatarange
+#define Findsorteddataindex _Findsorteddataindex
 #define Sortsorteddata _Sortsorteddata
 #define Getsortedbyselection _Getsortedbyselection
 #define Defaultbar _Defaultbar

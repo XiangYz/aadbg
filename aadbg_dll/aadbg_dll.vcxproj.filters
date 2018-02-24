@@ -32,5 +32,8 @@
     <ClCompile Include="func.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="kill_isdbg.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

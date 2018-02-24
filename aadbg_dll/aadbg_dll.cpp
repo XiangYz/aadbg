@@ -99,14 +99,24 @@ extc void _export cdecl ODBG_Pluginmainloop(DEBUG_EVENT* debug_event)
 
 	if( CREATE_PROCESS_DEBUG_EVENT == debug_event->dwDebugEventCode )
 	{
-		HANDLE hProcess = debug_event->u.CreateProcessInfo.hProcess;
 
+		HANDLE hProcess = debug_event->u.CreateProcessInfo.hProcess;
+#if 0
 		// 使用hook的方法
-		//if (!HookProcess(dwPID, TRUE, hProcess))
-		//{
-		//	MessageBox(g_hWndMain, "hook failed", g_szPluginName, MB_OK);
-		//}
-#if 1
+		if (!HookProcess(dwPID, TRUE, hProcess))
+		{
+			MessageBox(g_hWndMain, "hook failed", g_szPluginName, MB_OK);
+		}
+
+#else
+
+		DWORD idThread = GetThreadIDFromPID(debug_event->dwProcessId);
+		if (idThread == 0)
+		{
+			MessageBox(g_hWndMain, "threadid == 0", g_szPluginName, MB_OK);
+			return;
+		}
+
 		// 直接修改目标进程PEB的方法
 		HMODULE NtdllModule = GetModuleHandle(_T("ntdll.dll"));
 		PFN_NTQIP NtQueryInformationProcess = (PFN_NTQIP)GetProcAddress(NtdllModule,
@@ -115,6 +125,10 @@ extc void _export cdecl ODBG_Pluginmainloop(DEBUG_EVENT* debug_event)
 		UINT32  ReturnLength = 0;
 		NTSTATUS Status = NtQueryInformationProcess(hProcess,
 			ProcessBasicInformation, &pbi, (UINT32)sizeof(pbi), (UINT32*)&ReturnLength);
+
+		char status_str[32] = { 0 };
+		sprintf(status_str, "ntstatus: %d", Status);
+		MessageBox(g_hWndMain, status_str, g_szPluginName, MB_OK);
 
 		if (NT_SUCCESS(Status))
 		{
@@ -134,10 +148,19 @@ extc void _export cdecl ODBG_Pluginmainloop(DEBUG_EVENT* debug_event)
 
 			byte pPEB[512] = { 0 };
 			DWORD NumOfBytes;
-			if (!ReadProcessMemory(hProcess, (PVOID)pbi.PebBaseAddress, pPEB, 512, &NumOfBytes))
+			if (!ReadProcessMemory(hProcess, (PVOID)pbi.PebBaseAddress, pPEB, 512, &NumOfBytes)
+				|| NumOfBytes == 0)
 			{
 				MessageBox(g_hWndMain, "read peb failed", g_szPluginName, MB_OK);
 			}
+
+			char tmp[1024] = { 0 };
+			char* ptmp = tmp;
+			for (int i = 0; i < 512; ++i, ++ptmp)
+			{
+				sprintf(ptmp, "%02X ", pPEB[i]);
+			}
+			MessageBox(g_hWndMain, tmp, g_szPluginName, MB_OK);
 
 			// 修改DebugFlag
 			pPEB[2] = 0;
@@ -146,7 +169,8 @@ extc void _export cdecl ODBG_Pluginmainloop(DEBUG_EVENT* debug_event)
 			dwNtGlobalFlag &= ~0x70;
 			*(LPDWORD)(pPEB + 0x68) = dwNtGlobalFlag;
 
-			if (!WriteProcessMemory(hProcess, (PVOID)pbi.PebBaseAddress, pPEB, 512, &NumOfBytes))
+			if (!WriteProcessMemory(hProcess, (PVOID)pbi.PebBaseAddress, pPEB, 512, &NumOfBytes)
+				|| NumOfBytes == 0)
 			{
 				MessageBox(g_hWndMain, "write peb failed", g_szPluginName, MB_OK);
 			}
@@ -159,9 +183,11 @@ extc void _export cdecl ODBG_Pluginmainloop(DEBUG_EVENT* debug_event)
 #endif
 
 	} // if event create process
-	// 根本没有这个事件。。。
+	// 根本没有这个事件。。。。。。。。。。。。。。。。
 	else if (CREATE_THREAD_DEBUG_EVENT == debug_event->dwDebugEventCode)
 	{
+		//MessageBox(g_hWndMain, "CREATE_THREAD_DEBUG_EVENT", g_szPluginName, MB_OK);
+
 #if 0
 		MessageBox(g_hWndMain, "CREATE_THREAD_DEBUG_EVENT", g_szPluginName, MB_OK);
 
