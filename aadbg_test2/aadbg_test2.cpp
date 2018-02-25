@@ -9,7 +9,9 @@ int _tmain(int argc, TCHAR* argv[])
 	std::cout << "aadbg_test2: pls input a key" << std::endl;
 	std::cin >> c;
 
-	if (IsDebuggerPresent())
+	BOOL bRet = IsDebuggerPresent();
+
+	if (bRet)
 	{
 		std::cout << "being debugged" << std::endl;
 	}

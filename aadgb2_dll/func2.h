@@ -5,8 +5,8 @@
 #include <tchar.h>
 #include <TlHelp32.h>
 
-#define DLL_PATH_STRW L"D:\\xiang\\github_space\\aadbg\\Release\\aadbg2_dll.dll"
-#define DLL_PATH_STRA "D:\\xiang\\github_space\\aadbg\\Release\\aadbg2_dll.dll"
+#define DLL_PATH_STRW L"C:\\Users\\Public\\share\\aadbg_dll\\Release\\aadbg2_dll.dll"
+#define DLL_PATH_STRA "C:\\Users\\Public\\share\\aadbg_dll\\Release\\aadbg2_dll.dll"
 
 
 #define STATUS_SUCCESS						(0x00000000L) 

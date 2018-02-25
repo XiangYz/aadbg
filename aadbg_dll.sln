@@ -1,8 +1,6 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.31101.0
-MinimumVisualStudioVersion = 10.0.40219.1
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "aadbg_dll", "aadbg_dll\aadbg_dll.vcxproj", "{65762A1D-2453-40BB-B35E-5A8AE63F6533}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "aadbg_test", "aadbg_test\aadbg_test.vcxproj", "{252D2CD0-4CFB-4DAF-A74A-F9FA2AC44806}"

@@ -9,8 +9,8 @@
 
 #define TARGET_PROCESS "ollydbg.exe"
 
-#define DLL_PATH_STRW L"D:\\xiang\\github_space\\aadbg\\Release\\aadbg2_dll.dll"
-#define DLL_PATH_STRA "D:\\xiang\\github_space\\aadbg\\Release\\aadbg2_dll.dll"
+#define DLL_PATH_STRW L"C:\\Users\\Public\\share\\aadbg_dll\\Release\\aadbg2_dll.dll"
+#define DLL_PATH_STRA "C:\\Users\\Public\\share\\aadbg_dll\\Release\\aadbg2_dll.dll"
 
 typedef HMODULE(WINAPI *PFN_LOADLIBRARYA)(LPCSTR);
 typedef HMODULE(WINAPI *PFN_LOADLIBRARYW)(LPCWSTR);
