@@ -44,8 +44,8 @@ NTSTATUS DriverEntry(PDRIVER_OBJECT pDriverObject, PUNICODE_STRING pRegistryPath
 		pDriverObject->DriverUnload = DriverUnload;
 	}
 
-	g_dwCsrssProcId = (DWORD)GetCsrssProcId();
-	g_dwExplorerProcId = (DWORD)GetProcIdByName(L"explorer.exe");
+	//g_dwCsrssProcId = (DWORD)GetCsrssProcId();
+	//g_dwExplorerProcId = (DWORD)GetProcIdByName(L"explorer.exe");
 
 	pSerDesTable = (PSERVICE_DESCRIPTOR_TABLE)GetServiceDescriptorTableShadowAddr();
 
@@ -267,7 +267,7 @@ Routine Description:
 	int	nCount = 0;
 
 	KdPrint(("Begin Unhook!\n"));
-	UnhookSSDT();
+	//UnhookSSDT();
 	KdPrint(("Unhook Done!\n"));
 
 	PsSetCreateProcessNotifyRoutine(ProcCreateNotify, TRUE);
@@ -290,4 +290,77 @@ Routine Description:
 	IoDeleteDevice(pDriverObject->DeviceObject);
 
 	KdPrint(("UNLOAD SUCCESS!\n"));
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+void shDisableWriteProtect(ULONG *old)
+{
+	ULONG cr0_old;
+	_asm
+	{
+		cli
+		// 取出当前cr0的值放入eax并备份到变量中
+		mov eax,cr0 
+		mov cr0_old,eax
+		// 将eax与上0fffeffffh
+		and eax,0fffeffffh
+		mov cr0,eax;
+	};
+	*old = cr0_old;
+}
+
+void shEnableWriteProtect(ULONG old)
+{
+	_asm {
+		mov eax,old
+		mov cr0,eax
+		sti
+	};
+}
+
+
+
+void* SSDTHook(
+		 void *func_to_hook,
+		 void *new_func,
+         void **old_func)
+{
+	ULONG service_id;
+	void *function = NULL;
+	ULONG cr0_old;
+	void* old_function = NULL;
+
+	ASSERT(func_to_hook != NULL);
+	ASSERT(new_func != NULL);
+	if(func_to_hook == NULL || new_func == NULL)
+		return NULL;
+
+
+	service_id = *(PULONG)(((PUCHAR)func_to_hook)+1);
+	old_function = (void *)KeServiceDescriptorTable.ServiceTableBase[service_id];
+
+
+    if(old_func != NULL)
+        *old_func = old_function;
+
+	shDisableWriteProtect(&cr0_old);
+	KeServiceDescriptorTable.ServiceTableBase[service_id] = (unsigned int)new_func;
+	shEnableWriteProtect(cr0_old);
+
+	
+	return old_function;
 }

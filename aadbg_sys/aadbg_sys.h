@@ -30,6 +30,9 @@ typedef struct _SERVICE_DESCRIPTOR_TABLE
 }KSERVICE_DESCRIPTOR_TABLE, *PKSERVICE_DESCRIPTOR_TABLE;
 
 
+typedef NTSTATUS (*PFN_ZWCLOSE)(HANDLE Handle);
+
+
 // var declarations
 extern PKSERVICE_TABLE_DESCRIPTOR	KeServiceDescriptorTable;
 
@@ -44,6 +47,9 @@ extern ULONG	g_ulMinorVer;
 NTSTATUS CommDispatch(PDEVICE_OBJECT pDeviceObject, PIRP pIrp);
 VOID DriverUnload(PDRIVER_OBJECT pDriverObject);
 NTSTATUS DriverEntry(PDRIVER_OBJECT pDriverObject, PUNICODE_STRING pRegistryPath);
+
+
+void* SSDTHook(void *func_to_hook,void *new_func,void **old_func);
 
 
 #endif
